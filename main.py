@@ -2,7 +2,10 @@ from modules.core.run import Client
 
 
 
-if __name__ == '__main__':
+def main():
     client = Client()
     client.run(token=client.get_token())
 
+
+if __name__ == '__main__':
+    main()

@@ -32,22 +32,32 @@ class Economy(commands.Cog):
         econony = await self.get_economy(member)
         return econony.balance
 
+    @app_commands.command()
+    async def set_money(self, interaction: discord.Interaction, member: discord.Member, money: int):
+        if money < 0: money = 0
+        user, created = await User.get_or_create_by_member(member)
+        await models.Economy.update_or_create(to_user=user, defaults=dict(balance=money))
+        embed = discord.Embed(title=f'{member} имеет на счету', description = f'```{money} монет```', color=0xafdafc)
+        embed.set_author(name=f'{interaction.user} принудительно изменил баланс пользователя', icon_url=member.avatar)
+        await interaction.response.send_message(embed = embed)
+
 
 
 
 
     @app_commands.command()
     async def balance(self, interaction: discord.Interaction, member: None|discord.Member) -> None:
-        print(member)
-        if member.bot:
-            raise OnlyUserError()
-        member = interaction.user
-        print(member)
+        if not member or member.bot:
+            member = interaction.user
         balance = await self.get_balance(member)
-        embed = discord.Embed(title = "**Pong!**", description = balance, color = 0xafdafc)
+        embed = discord.Embed(description = f'```{balance} монет```', color=0xafdafc)
+        embed.set_author(name=f'{member} теперь имеет на счету', icon_url=member.avatar)
         await interaction.response.send_message(embed = embed)
 
 
-    @commands.Cog.listener()
-    async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError) -> None:
-        print(interaction, error)
+
+
+
+    # @commands.Cog.listener()
+    # async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError) -> None:
+    #     print(interaction, error)
