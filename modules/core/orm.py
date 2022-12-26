@@ -9,7 +9,8 @@ async def init():
         modules={'models': 
         [
             'modules.economy.models',
-            'modules.core.models'
+            'modules.core.models',
+            'modules.verif.models'
         ]
         })
     # Generate the schema

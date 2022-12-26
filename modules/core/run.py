@@ -10,7 +10,7 @@ from modules.core.core import Core
 from discord import utils
 import asyncio
 from tortoise import Tortoise
-from modules.vidget.core.vidget import Vidget
+from modules.verif.core.verif import Verif
 
 
 class Client(commands.Bot):
@@ -65,7 +65,7 @@ class Client(commands.Bot):
     async def add_cogs(self):
         await self.add_cog(Core(self))
         await self.add_cog(Economy(self))
-        await self.add_cog(Vidget(self))
+        await self.add_cog(Verif(self))
 
 
     async def sync_cogs(self):
