@@ -11,4 +11,3 @@ class Verif(Model):
     how_find = fields.CharField(max_length=256,null=True)
     support_rate = fields.SmallIntField(default=None,null=True)
     date = fields.DatetimeField(auto_now_add=True)
-    
