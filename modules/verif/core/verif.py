@@ -1,8 +1,10 @@
 import discord
+from tortoise.exceptions import ValidationError
 from discord.ext import commands
 from discord import app_commands
 from discord.ui import Button, View
 from modules.verif import models
+from modules.core.models import User
 
 class Verif(commands.Cog):
     
@@ -12,10 +14,9 @@ class Verif(commands.Cog):
     async def cog_load(self):
         pass
         
-    # TODO CHECK ADMIN
     @app_commands.command()
     async def verif(self, interaction: discord.Interaction, member: discord.Member,name:str|None,age:int|None,how_find:str|None) -> None:
-        # if await self.__check_info(interaction,member,name,how_find):
+        # if await self.__is__avaible(interaction.user.id)== False:
         #     return
     
         model = await models.Verif.create(to_support_id=interaction.user.id,to_user_id=member.id,name=name,age=age,how_find=how_find)
@@ -26,11 +27,11 @@ class Verif(commands.Cog):
         
         await interaction.response.send_message(embed=embed)
     
-    # TODO CHECK ADMIN
     # todo Esli embed sliskom big
     @app_commands.command()
     async def verif_info(self, interaction: discord.Interaction, member: discord.Member) -> None:
-        # ? not sure
+        # if await self.__is__avaible(interaction.user.id)== False:
+        #     return
         v_list = await models.Verif.filter(to_user_id=member.id)
     
         str_list = []
@@ -41,6 +42,14 @@ class Verif(commands.Cog):
         embed.set_author(name=f' All verifications of {member}',icon_url=member.avatar)
         
         await interaction.response.send_message(embed=embed)
+        
+    @verif.error
+    async def on_verif_error(self, interaction: discord.Interaction, error: app_commands.CommandInvokeError):
+        if isinstance(error.original,ValidationError):
+            embed = discord.Embed(description="The len of name > 32 or the len of how_find > 256",color=0xafdafc)
+            embed.set_author(name=f'Error ',icon_url=interaction.user.avatar)
+        
+            await interaction.response.send_message(embed=embed)
         
     async def estimate_support(self,id: models.Verif.pk, support: discord.User, member: discord.Member) -> None:
         embed = discord.Embed(description="Estimate your support",color=0xafdafc)
@@ -62,17 +71,11 @@ class Verif(commands.Cog):
             await models.Verif.filter(id=id).update(support_rate=rate)
         return __callback
     
-    # async def __check_info(self, interaction: discord.Interaction,member:discord.Member,name: str, how_find:str) -> bool:
-    #     if name != None and len(name) > 32:
-    #             reason= "Len of 'name' is bigger then 32"
-    #     if how_find != None and len(how_find) > 256:
-    #         reason= "Len of 'how_find' is bigger then 32"
-    #     else:
-    #         return False
-        
-    #     embed = discord.Embed(description=f' not successful due to {reason}',color=0xafdafc)
-    #     embed.set_author(name=f"{member} was verified ",icon_url=member.avatar)
-        
-    #     await interaction.response.send_message(embed=embed)
-        
-    #     return True
+    @staticmethod
+    async def __is__avaible(id:int)->bool:
+        u = await User.filter(id=id)
+        if  u[0].is_admin == False and u[0].is_moderator == False and u[0].is_support == False:
+            return False
+        return True
+    
+    
