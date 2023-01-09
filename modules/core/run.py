@@ -6,6 +6,8 @@ from modules.economy.core.economy import Economy
 from discord.ext import commands
 from modules.core import orm
 from modules.core.core import Core
+from modules.banner.banner import Banner
+from modules.configs.main_config import *
 
 from discord import utils
 import asyncio
@@ -60,11 +62,22 @@ class Client(commands.Bot):
             # and `self.start` closes all sockets and the HTTPClient instance.
             asyncio.run(Tortoise.close_connections())
 
-
+    def run_cog_log(self, cog):
+        logger.info(f'Подключается cog=\'{cog.__name__}\'')
     
     async def add_cogs(self):
-        await self.add_cog(Core(self))
-        await self.add_cog(Economy(self))
+        if RunModules.core:
+            self.run_cog_log(Core)
+            await self.add_cog(Core(self))
+        if RunModules.economy:
+            self.run_cog_log(Economy)
+            await self.add_cog(Economy(self))
+            
+        if RunModules.banner:
+            self.run_cog_log(Banner)
+            await self.add_cog(Banner(self))
+            
+
 
 
     async def sync_cogs(self):
@@ -75,9 +88,7 @@ class Client(commands.Bot):
             print(ex)
 
 
-    async def on_voice_state_update(self, member, before, after):
-        print(member, ' iii')
-        
+
 
 
     @staticmethod

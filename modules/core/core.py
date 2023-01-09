@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from loguru import logger
 from modules.core.models import User
-
+from modules.core.admin import CoreAdmin
 
 
 class Core(commands.Cog):
@@ -13,8 +13,8 @@ class Core(commands.Cog):
 
 
     async def cog_load(self):
-        await self.update_or_create_all_guild_users()
-
+        # await self.update_or_create_all_guild_users()
+        await self.client.add_cog(CoreAdmin(self.client))
 
 
 

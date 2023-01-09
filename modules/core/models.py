@@ -3,14 +3,9 @@ from tortoise import fields
 from discord import Member
 
 class User(Model):
-
     id = fields.BigIntField(pk=True)
     name = fields.CharField(null=True, max_length=64)
     discriminator = fields.CharField(null=True, max_length=4)
-    is_admin = fields.BooleanField(default=False)
-    is_moderator = fields.BooleanField(default=False)
-    is_eventmod = fields.BooleanField(default=False)
-    is_support = fields.BooleanField(default=False)
 
 
     @classmethod
@@ -44,3 +39,21 @@ class User(Model):
 
     def __str__(self):
         return self.name
+
+
+class Permissions(Model):
+    to_user = fields.OneToOneField('models.User', related_name='permissions')
+    is_admin = fields.BooleanField(default=False)
+    is_curator = fields.BooleanField(default=False)
+    is_moderator = fields.BooleanField(default=False)
+    is_eventmod = fields.BooleanField(default=False)
+    is_support = fields.BooleanField(default=False)
+
+
+    @classmethod
+    async def get_or_create_permissions(cls, user: User):
+        permissions = await user.permissions
+        if permissions:
+            return permissions
+        return await Permissions.create(to_user=user)
+
