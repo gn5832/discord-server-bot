@@ -76,11 +76,14 @@ class Client(commands.Bot):
         if RunModules.banner:
             self.run_cog_log(Banner)
             await self.add_cog(Banner(self))
-            
+
+
+
 
 
 
     async def sync_cogs(self):
+
         try:
             synced = await self.tree.sync()
             logger.info(f'Synced {len(synced)} commands')

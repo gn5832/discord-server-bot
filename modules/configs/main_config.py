@@ -1,4 +1,4 @@
 class RunModules:
-    core=False
+    core=True
     economy=True
     banner=True

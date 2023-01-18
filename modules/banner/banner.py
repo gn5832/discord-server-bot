@@ -23,9 +23,9 @@ class Banner(commands.Cog):
 
 
     async def cog_load(self):
-        await self.banner_loop()
+        asyncio.ensure_future(self.banner_loop())
 
-
+        
     def get_in_voice_members_len(self):
         return len(self.guild._voice_states)
         
